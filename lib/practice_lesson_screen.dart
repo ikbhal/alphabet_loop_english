@@ -30,19 +30,31 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
     // audioPlayer.
     audioPlayer.setReleaseMode(ReleaseMode.stop);
     audioPlayer.onPlayerStateChanged.listen((event) {
-      if (event == PlayerState.playing) {
-        setState(() {
-          isPlaying = true;
+      // if (event == PlayerState.playing) {
+      //   // setState(() {
+      //   //   isPlaying = true;
+      //   // });
+      // } else  
+      if (isPlaying &&  event == PlayerState.completed) {
+        int currentIndex = alphabets.indexOf(currentAlphabet);
+         setState(() {
+          if (currentIndex < alphabets.length - 1) {
+            currentAlphabet = alphabets[currentIndex + 1];
+          } else {
+            currentAlphabet = alphabets[0];
+          }
         });
-      } else {
-        setState(() {
-          isPlaying = false;
-        });
-      }
+        updateCurrentAlphabet();
+      } 
+      // else {
+      //   setState(() {
+      //     isPlaying = false;
+      //   });
+      // } 
     });
 
     generateAlphabetList();
-    playCurrentAlphabetAudio();
+    // playCurrentAlphabetAudio();
   }
 
   void generateAlphabetList() {
@@ -69,18 +81,22 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
     await audioPlayer.resume();
   }
 
-  void updateCurrentAlphabet() {
-    int currentIndex = alphabets.indexOf(currentAlphabet);
-
-    setState(() {
-      if (currentIndex < alphabets.length - 1) {
-        currentAlphabet = alphabets[currentIndex + 1];
-      } else {
-        currentAlphabet = alphabets[0];
-      }
+  void toggleLoop() {
+    setState((){
+      isPlaying = !isPlaying;
     });
+    updateCurrentAlphabet();
+  }
 
+  void updateCurrentAlphabet() {
+    print("inside updateCurrentAlphabet");
+    if(!isPlaying){
+      print("wont loop as isplaying false, returning");
+      return;
+    }
+    
     playCurrentAlphabetAudio();
+   
   }
 
   @override
@@ -98,14 +114,19 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
               style: TextStyle(fontSize: 120.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20.0),
+            // ElevatedButton(
+            //   onPressed: updateCurrentAlphabet,
+            //   child: Text('Next Alphabet'),
+            // ),
             ElevatedButton(
-              onPressed: updateCurrentAlphabet,
-              child: Text('Next Alphabet'),
+              onPressed: toggleLoop,
+              child: Text('Start Loop'),
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                // Navigator.pop(context);
+                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
               },
               child: Text('Home'),
             ),
