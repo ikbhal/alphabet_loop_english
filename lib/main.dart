@@ -24,7 +24,7 @@ class AlphabetApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(

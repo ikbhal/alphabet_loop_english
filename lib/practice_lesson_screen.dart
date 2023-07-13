@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-// import 'package:audioplayers/audio_cache.dart';
 
 class PracticeLessonScreen extends StatefulWidget {
   final String startAlphabet;
@@ -16,7 +15,6 @@ class PracticeLessonScreen extends StatefulWidget {
 class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
   late List<String> alphabets;
   late String currentAlphabet;
-  // late AudioCache audioCache;
   late AudioPlayer audioPlayer;
   bool isPlaying = false;
 
@@ -25,16 +23,15 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
     super.initState();
     alphabets = [];
     currentAlphabet = widget.startAlphabet;
-    // audioCache = AudioCache(prefix: 'assets/audio/');
+    // cache assets from a to z from assets/audio
+    //
+    // AudioCache.instance.loadAsset('assets/audio/a.mp3');
+
     audioPlayer = AudioPlayer();
+    audioCacheLoadAllAlphabets();
     // audioPlayer.
     audioPlayer.setReleaseMode(ReleaseMode.stop);
     audioPlayer.onPlayerStateChanged.listen((event) {
-      // if (event == PlayerState.playing) {
-      //   // setState(() {
-      //   //   isPlaying = true;
-      //   // });
-      // } else  
       if (isPlaying &&  event == PlayerState.completed) {
         int currentIndex = alphabets.indexOf(currentAlphabet);
          setState(() {
@@ -46,16 +43,31 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
         });
         updateCurrentAlphabet();
       } 
-      // else {
-      //   setState(() {
-      //     isPlaying = false;
-      //   });
-      // } 
     });
 
     generateAlphabetList();
-    // playCurrentAlphabetAudio();
   }
+
+   @override
+  void dispose() {
+    audioPlayer.stop();
+    audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void audioCacheLoadAllAlphabets(){
+    int start = 'a'.codeUnitAt(0);
+    int end = 'z'.codeUnitAt(0);
+
+    List<String> alphabets = [];
+    for (int i = start; i <= end; i++) {
+      String currentAlphabet = String.fromCharCode(i);
+      String assetPath = 'assets/audio/$currentAlphabet.mp3';
+      AudioCache.instance.loadAsset('assets/audio/a.mp3');
+      // alphabets.add(assetPath);
+    }
+  }
+
 
   void generateAlphabetList() {
     int start = widget.startAlphabet.codeUnitAt(0);
@@ -67,7 +79,6 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
   }
 
   void playCurrentAlphabetAudio() {
-    // audioCache.play('$currentAlphabet.mp3');
     if (currentAlphabet != '') {
       audioPlayer.play(AssetSource('audio/$currentAlphabet.mp3'));
     }
@@ -84,8 +95,8 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
   void toggleLoop() {
     setState((){
       isPlaying = !isPlaying;
+      updateCurrentAlphabet();
     });
-    updateCurrentAlphabet();
   }
 
   void updateCurrentAlphabet() {
@@ -94,9 +105,7 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
       print("wont loop as isplaying false, returning");
       return;
     }
-    
     playCurrentAlphabetAudio();
-   
   }
 
   @override
@@ -120,7 +129,7 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
             // ),
             ElevatedButton(
               onPressed: toggleLoop,
-              child: Text('Start Loop'),
+              child: !isPlaying ?Text ('Start Loop') : Text('Stop Loop'),
             ),
             SizedBox(height: 20.0),
             ElevatedButton(
