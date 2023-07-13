@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 // import 'package:audioplayers/audio_cache.dart';
 
@@ -5,7 +6,8 @@ class PracticeLessonScreen extends StatefulWidget {
   final String startAlphabet;
   final String endAlphabet;
 
-  PracticeLessonScreen({required this.startAlphabet, required this.endAlphabet});
+  PracticeLessonScreen(
+      {required this.startAlphabet, required this.endAlphabet});
 
   @override
   _PracticeLessonScreenState createState() => _PracticeLessonScreenState();
@@ -15,6 +17,8 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
   late List<String> alphabets;
   late String currentAlphabet;
   // late AudioCache audioCache;
+  late AudioPlayer audioPlayer;
+  bool isPlaying = false;
 
   @override
   void initState() {
@@ -22,6 +26,20 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
     alphabets = [];
     currentAlphabet = widget.startAlphabet;
     // audioCache = AudioCache(prefix: 'assets/audio/');
+    audioPlayer = AudioPlayer();
+    // audioPlayer.
+    audioPlayer.setReleaseMode(ReleaseMode.stop);
+    audioPlayer.onPlayerStateChanged.listen((event) {
+      if (event == PlayerState.playing) {
+        setState(() {
+          isPlaying = true;
+        });
+      } else {
+        setState(() {
+          isPlaying = false;
+        });
+      }
+    });
 
     generateAlphabetList();
     playCurrentAlphabetAudio();
@@ -38,6 +56,17 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
 
   void playCurrentAlphabetAudio() {
     // audioCache.play('$currentAlphabet.mp3');
+    if (currentAlphabet != '') {
+      audioPlayer.play(AssetSource('audio/$currentAlphabet.mp3'));
+    }
+  }
+
+  Future<void> pauseAudio() async {
+    await audioPlayer.pause();
+  }
+
+  Future<void> resumeAudio() async {
+    await audioPlayer.resume();
   }
 
   void updateCurrentAlphabet() {
