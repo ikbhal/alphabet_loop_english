@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
@@ -32,9 +34,9 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
     // audioPlayer.
     audioPlayer.setReleaseMode(ReleaseMode.stop);
     audioPlayer.onPlayerStateChanged.listen((event) {
-      if (isPlaying &&  event == PlayerState.completed) {
+      if (isPlaying && event == PlayerState.completed) {
         int currentIndex = alphabets.indexOf(currentAlphabet);
-         setState(() {
+        setState(() {
           if (currentIndex < alphabets.length - 1) {
             currentAlphabet = alphabets[currentIndex + 1];
           } else {
@@ -42,20 +44,20 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
           }
         });
         updateCurrentAlphabet();
-      } 
+      }
     });
 
     generateAlphabetList();
   }
 
-   @override
+  @override
   void dispose() {
     audioPlayer.stop();
     audioPlayer.dispose();
     super.dispose();
   }
 
-  void audioCacheLoadAllAlphabets(){
+  void audioCacheLoadAllAlphabets() {
     int start = 'a'.codeUnitAt(0);
     int end = 'z'.codeUnitAt(0);
 
@@ -67,7 +69,6 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
       // alphabets.add(assetPath);
     }
   }
-
 
   void generateAlphabetList() {
     int start = widget.startAlphabet.codeUnitAt(0);
@@ -93,7 +94,7 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
   }
 
   void toggleLoop() {
-    setState((){
+    setState(() {
       isPlaying = !isPlaying;
       updateCurrentAlphabet();
     });
@@ -101,11 +102,21 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
 
   void updateCurrentAlphabet() {
     print("inside updateCurrentAlphabet");
-    if(!isPlaying){
+    if (!isPlaying) {
       print("wont loop as isplaying false, returning");
       return;
     }
     playCurrentAlphabetAudio();
+  }
+
+  Color getRandomColor() {
+    Random random = Random();
+    return Color.fromRGBO(
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+      1.0,
+    );
   }
 
   @override
@@ -114,13 +125,17 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
       appBar: AppBar(
         title: Text('Practice Lesson'),
       ),
-      body: Center(
+      body: Expanded(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               currentAlphabet,
-              style: TextStyle(fontSize: 120.0, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 240.0, 
+                fontWeight: FontWeight.bold,
+                color: getRandomColor()
+              ),
             ),
             SizedBox(height: 20.0),
             // ElevatedButton(
@@ -129,7 +144,7 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
             // ),
             ElevatedButton(
               onPressed: toggleLoop,
-              child: !isPlaying ?Text ('Start Loop') : Text('Stop Loop'),
+              child: !isPlaying ? Text('Start Loop') : Text('Stop Loop'),
             ),
             SizedBox(height: 20.0),
             ElevatedButton(

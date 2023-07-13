@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'practice_lesson_screen.dart';
 import 'record_lesson_screen.dart';
+import 'package:platform/platform.dart';
 
 void main() {
   runApp(AlphabetApp());
@@ -25,6 +26,9 @@ class AlphabetApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget{
+
+  Platform platform = LocalPlatform();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +50,8 @@ class HomePage extends StatelessWidget{
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 // crossAxisCount: 4,
-                 crossAxisCount: 10,
+                //  crossAxisCount: 10,
+                crossAxisCount: platform.isWindows ? 10 : 4
               ),
               itemCount: 26,
               itemBuilder: (context, index) {
